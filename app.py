@@ -28,6 +28,17 @@ jwt = JWTManager(app)
 # Initialize Twilio client for SMS API access
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
+# Global flag to ensure tables are created only once
+tables_created = False
+
+# Replace @app.before_first_request to avoid compatibility issues
+@app.before_request
+def create_tables_once():
+    global tables_created
+    if not tables_created:
+        db.create_all()  # Create tables if not exist
+        tables_created = True  # Set flag to skip future calls
+
 # User database model stores username, email, and hashed password
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Primary key unique identifier
@@ -75,11 +86,6 @@ class EmergencyContact(db.Model):
             "name": self.name,
             "phone": self.phone
         }
-
-# Create database tables if they don't exist on first request
-@app.before_first_request
-def create_tables():
-    db.create_all()
 
 # Endpoint to register new users (no auth required)
 @app.route("/api/register", methods=["POST"])
