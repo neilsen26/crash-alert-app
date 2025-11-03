@@ -1,0 +1,8 @@
+Flask
+Flask_SQLAlchemy
+Flask-JWT-Extended
+passlib
+twilio
+flask-wtf
+flask-login
+flask-bootstrap
